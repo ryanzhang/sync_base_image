@@ -15,11 +15,12 @@ ubi8/ruby-27:1-14
 ubi8/nodejs-10:1-116
 ubi8/nodejs-12:1-66
 ubi8/nodejs-14:1-17
+ubi8/ubi:8.3-227
 ubi8/ubi-minimal:8.3-230
+ubi8/ubi-init:8.3-17
 "
 redhat_registry=registry.redhat.io
-#Remember to change subdomain to your real subdomain
-private_registry=default-route-openshift-image-registry.apps.subdomain
+private_registry=default-route-openshift-image-registry.apps.yoursubdomain
 for item in $base_image_list; do
     # echo $redhat_registry/$item
     podman pull $redhat_registry/$item 
@@ -31,5 +32,6 @@ for item in $base_image_list; do
     podman tag $redhat_registry/$item $private_registry/openshift/$only_image_name:latest
     podman push $private_registry/openshift/$only_image_name:latest --tls-verify=false
     echo "Tagged and pushed $private_registry/openshift/$only_image_name:latest"
+    oc annotate is --overwrite $only_image_name from='$redhat_registry/$item' source='$redhat_registry'
 done
 
